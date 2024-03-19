@@ -3,8 +3,9 @@ import numpy as np
 
 import matplotlib as mpl
 
-fig = plt.figure(figsize=(4, 2), facecolor='lightskyblue',
-                 layout='constrained')
-fig.suptitle('A nice Matplotlib Figure')
-ax = fig.add_subplot()
-ax.set_title('Axes', loc='left', fontstyle='oblique', fontsize='medium')
+x = np.linspace(0, 2 * np.pi, 200)
+y = np.sin(x)
+
+fig, ax = plt.subplots()
+ax.plot(x, y)
+plt.show()
