@@ -9,10 +9,10 @@ ode = Euler.ODE()
 
 method = Euler.EulerMethod(ode)
 
-method.start()
+x, y = method.start()
 
-x = np.linspace(0, 2 * np.pi, 200)
-y = np.sin(x)
+# x = np.linspace(0, 2 * np.pi, 200)
+# y = np.sin(x)
 
 fig, ax = plt.subplots()
 ax.plot(x, y)

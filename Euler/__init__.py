@@ -55,5 +55,6 @@ class EulerMethod:
 			self.xVec.append(x)
 			self.yVec.append(y)
 			step = step + 1
-		print(self.xVec)
-		print(self.yVec)
+		# print(self.xVec)
+		# print(self.yVec)
+		return (self.xVec, self.yVec)
