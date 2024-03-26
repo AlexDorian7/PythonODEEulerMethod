@@ -25,8 +25,8 @@ class ODE:
 		return self
 
 	def __next__(self):			# Iterate using Euler's Method
-		self.currY = self.currY + self.H * (self.A * self.currY + self.B * self.currX + self.C)
-		self.currX = self.currX + self.H
+		self.currY = self.currY + self.H * (self.A * self.currY + self.B * self.currX + self.C)	# y = y0+h*f(x,y(x))
+		self.currX = self.currX + self.H							# x = x0+h
 		return (self.currX, self.currY)
 
 class EulerMethod:
