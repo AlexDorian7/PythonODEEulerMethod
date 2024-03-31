@@ -8,7 +8,7 @@ class __main__:
 	def __init__(self, inp):		# Constructor
 		self.input = inp
 		self.cursor = 0
-		self.DFA = [[-1]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states) #KD
+		self.DFA = [[-1]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
 
 	def __iter__(self):				# Init the iterator
 		self.cursor = 0
@@ -68,6 +68,46 @@ class __main__:
 
 		# done mapping graph
 			
+		# Start of the algorithm
+		
+		# Keep track of the state
+		currState = 0
+		prevState = -1
+
+		value = "" # store value read from input file
+
+		ch = '' # value read from input file
+		ch = self.__next__
+
+		# handle white spaces
+		while ch.isspace():
+			ch = self.__next__
+
+		# make sure we are not at the end of the file
+		if ch == ' ':
+			return 10; # EOF
+
+	
+		# should we put back char here??
+	
 		# THE algorithm
+		while currState != -1: # not ERROR
+			ch = self.__next__;
+			prevState = currState
+			currState = self.DFA[currState][ord(ch)]
+			if currState != -1:
+				value += ch
+
+		
+
+		# check if ID is not a reserved word
+		# if prevState == 3:
+				# do we have any reserved words? like SIN, COS, etc...?
+
+			
+
+
+		# encountered a invalid state
+		return prevState;			
 
 
