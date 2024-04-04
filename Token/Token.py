@@ -18,7 +18,7 @@ class __main__:
 		self.cursor = 0				# Position on the string
 		self.DFA = [[TokenType.ERROR]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
 		self.tokType = TokenType.ERROR 				# Token type
-		self.value = ""				# Token value
+		self.tokVal = ""				# Token value
 
 	def __iter__(self):				# Init the iterator
 		self.cursor = 0
@@ -33,7 +33,7 @@ class __main__:
 		self.cursor = self.cursor - 1
 
 	def print(self):				# print Token object info
-		print("{ Type: ", self.tokType, " Value:", self.value, "}")
+		print("{ Type: ", self.tokType, " Value:", self.tokVal, "}")
 
 	def getToken(self):				# get the next token (Should return a token type)
 		# map out the graph
@@ -114,7 +114,7 @@ class __main__:
 			currState = self.DFA[currState][ord(ch)]
 
 			if currState != TokenType.ERROR:
-				self.value += ch			
+				self.tokVal += ch			
 
 
 		# we read an extra character ... put it back for the next get()
