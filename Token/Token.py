@@ -32,7 +32,7 @@ class __main__:
 	def putBack(self):				# "put" back character
 		self.cursor = self.cursor - 1
 
-	def print(self):				# print Token object info
+	def printTok(self):				# print Token object info
 		print("{ Type: ", self.tokType, " Value:", self.tokVal, "}")
 
 	def getToken(self):				# get the next token (Should return a token type)
