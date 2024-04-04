@@ -5,22 +5,22 @@ class TokenType(Enum):							# TokenType Enum
 	ADDOP	= 1
 	MULOP	= 2
 	REAL	= 3
-	EXP	= 6
+	EXP		= 6
 	ALPHA	= 7
 	RPAREN	= 8
 	LPAREN	= 9
-	EOF	= 10
-	SIN	= 11
-	COS	= 12
-	TAN	= 13
+	EOF		= 10
+	SIN		= 11
+	COS		= 12
+	TAN		= 13
 	ASIN	= 14
 	ACOS	= 15
 	ATAN	= 16
-	ABS	= 17
+	ABS		= 17
 	SIGN	= 18
-	EXP	= 19
-	LN	= 20
-	LOG	= 21
+	EXP		= 19
+	LN		= 20
+	LOG		= 21
 	LOG2	= 22
 
 
@@ -34,47 +34,47 @@ class Token:
 
 			#PM
 		# START(0) -> + (1)
-		self.DFA [0][ord( '+' )] = TokenType.ADDOP		# ord() returns ASSCI value of a char
+		self.DFA [0][ord( '+' )] = TokenType.ADDOP		# ord() returns ASSCI value of a char`
 		# START(0) -> - (1)
-		self.DFA [0][ord( '-' )] = 1
+		self.DFA [0][ord( '-' )] = TokenType.ADDOP
 
 
 			#MD
 		# START(0) -> * (2)
-		self.DFA [0][ord( '*' )] = 2
+		self.DFA [0][ord( '*' )] = TokenType.MULOP
 		# START(0) -> / (2)
-		self.DFA [0][ord( '/' )] = 2
+		self.DFA [0][ord( '/' )] = TokenType.MULOP
 
 
 			#EXP
 		# START(0) -> ^ (6)
-		self.DFA [0][ord( '^' )] = 6
+		self.DFA [0][ord( '^' )] = TokenType.EXP
 
 
 			#LPAREN
 		# START(0) -> ( (9)
-		self.DFA [0][ord( '(' )] = 9
+		self.DFA [0][ord( '(' )] = TokenType.LPAREN
 			#RPAREN
 		# START(0) -> ) (9)
-		self.DFA [0][ord( ')' )] = 9
+		self.DFA [0][ord( ')' )] = TokenType.RPAREN
 
 
 			#ID (upper and lowercase)
 		for i in range( ord('A'), ord('Z')+1):			# [97,122]
-			self.DFA [0][i] = 7				# START(0) -> ID (7) uppercase
-			self.DFA [0][i+32] = 7				# lowercase
+			self.DFA [0][i] = TokenType.ALPHA			# START(0) -> ID (7) uppercase
+			self.DFA [0][i+32] = TokenType.ALPHA		# lowercase
 
-			self.DFA [7][i] = 7				# ID(7) -> ID (7) uppercase
-			self.DFA [7][i+32] = 7				# lowercase
+			self.DFA [7][i] = TokenType.ALPHA			# ID(7) -> ID (7) uppercase
+			self.DFA [7][i+32] = TokenType.ALPHA		# lowercase
 
 
 			#INT
-		for i in range(10):					# [0,9]
-			self.DFA [0][ord('0')+i] = 3 			# START(0) -> DIGIT(3)
-			self.DFA [3][ord('0')+i] = 3 			# DIGIT(3) -> DIGIT(3)
-			self.DFA [3][ord( '.' )] = 4 			# DIGIT(3) -> . (4)
-			self.DFA [4][ord('0')+i] = 5 			# . (4) -> DIGIT (5)
-			self.DFA [5][ord('0')+i] = 5			# DIGIT(5) -> DIGIT (5)
+		for i in range(10):	# [0,9]
+			self.DFA [0][ord('0')+i] = TokenType.REAL 	# START(0) -> DIGIT(3)
+			self.DFA [3][ord('0')+i] = TokenType.REAL 				# DIGIT(3) -> DIGIT(3)
+			self.DFA [3][ord( '.' )] = TokenType.REAL 				# DIGIT(3) -> . (4)
+			self.DFA [4][ord('0')+i] = TokenType.REAL 				# . (4) -> DIGIT (5)
+			self.DFA [5][ord('0')+i] = TokenType.REAL				# DIGIT(5) -> DIGIT (5)
 
 		# done mapping graph
 
@@ -98,7 +98,7 @@ class Token:
 		# Start of the algorithm
 
 		# Keep track of the state
-		currState = 0
+		currState = -2
 		prevState = TokenType.ERROR
 
 		value = ""						# store value read from input file
