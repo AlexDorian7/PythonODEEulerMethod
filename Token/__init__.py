@@ -1,6 +1,6 @@
 from enum import Enum
 
-class TokenType(Enum):				# TokenType Enum
+class TokenType(Enum):							# TokenType Enum
 	ERROR = 0
 	ADDOP = 1
 	MULOP = 2
@@ -11,30 +11,30 @@ class TokenType(Enum):				# TokenType Enum
 	LPAREN = 9
 
 
-class __main__:
-	def __init__(self, inp):		# Constructor
+class Token:
+	def __init__(self, inp):					# Constructor
 		self.input = inp
 		self.cursor = 0
 		self.DFA = [[TokenType.ERROR]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
 
-	def __iter__(self):				# Init the iterator
+	def __iter__(self):						# Init the iterator
 		self.cursor = 0
 		return self
 
-	def __next__(self):				# get the next character
+	def __next__(self):						# get the next character
 		character = self.input[self.cursor]
 		self.cursor = self.cursor + 1
 		return character
-	
-	def putBack(self):				# "put" back character
+
+	def putBack(self):						# "put" back character
 		self.cursor = self.cursor - 1
 
-	def getToken(self):				# get the next token (Should return a token type)
+	def getToken(self):						# get the next token (Should return a token type)
 		# map out the graph
 
 			#PM
 		# START(0) -> + (1)
-		self.DFA [0][ord( '+' )] = TokenType.ADDOP # ord() returns ASSCI value of a char
+		self.DFA [0][ord( '+' )] = TokenType.ADDOP		# ord() returns ASSCI value of a char
 		# START(0) -> - (1)
 		self.DFA [0][ord( '-' )] = 1
 
@@ -60,33 +60,33 @@ class __main__:
 
 
 			#ID (upper and lowercase)
-		for i in range( ord('A'), ord('Z')+1): # [97,122]
-			self.DFA [0][i] = 7	# START(0) -> ID (7) uppercase 
-			self.DFA [0][i+32] = 7 # lowercase
+		for i in range( ord('A'), ord('Z')+1):			# [97,122]
+			self.DFA [0][i] = 7				# START(0) -> ID (7) uppercase
+			self.DFA [0][i+32] = 7				# lowercase
 
-			self.DFA [7][i] = 7 	# ID(7) -> ID (7) uppercase
-			self.DFA [7][i+32] = 7 # lowercase
+			self.DFA [7][i] = 7				# ID(7) -> ID (7) uppercase
+			self.DFA [7][i+32] = 7				# lowercase
 
 
-			#INT	
-		for i in range(10): # [0,9]
-			self.DFA [0][ord(i)] = 3 		# START(0) -> DIGIT(3)
-			self.DFA [3][ord(i)] = 3 		# DIGIT(3) -> DIGIT(3)	
-			self.DFA [3][ord( '.' )] = 4 	# DIGIT(3) -> . (4)	
-			self.DFA [4][ord(i)] = 5 		# . (4) -> DIGIT (5)
-			self.DFA [5][ord(i)] = 5		# DIGIT(5) -> DIGIT (5)
+			#INT
+		for i in range(10):					# [0,9]
+			self.DFA [0][ord(i)] = 3 			# START(0) -> DIGIT(3)
+			self.DFA [3][ord(i)] = 3 			# DIGIT(3) -> DIGIT(3)
+			self.DFA [3][ord( '.' )] = 4 			# DIGIT(3) -> . (4)
+			self.DFA [4][ord(i)] = 5 			# . (4) -> DIGIT (5)
+			self.DFA [5][ord(i)] = 5			# DIGIT(5) -> DIGIT (5)
 
 		# done mapping graph
-			
+
 		# Start of the algorithm
-		
+
 		# Keep track of the state
 		currState = 0
 		prevState = TokenType.ERROR
 
-		value = "" # store value read from input file
+		value = ""						# store value read from input file
 
-		ch = '' # value read from input file
+		ch = ''							# value read from input file
 		ch = next(self)
 
 		# handle white spaces
@@ -97,9 +97,8 @@ class __main__:
 		if ch == ' ':
 			return 10; # EOF
 
-	
 		# should we put back char here??
-	
+
 		# THE algorithm
 		while currState != TokenType.ERROR: # not ERROR
 			ch = next(self)
@@ -108,16 +107,19 @@ class __main__:
 			if currState != TokenType.ERROR:
 				value += ch
 
-		
+
 
 		# check if ID is not a reserved word
 		# if prevState == 3:
 				# do we have any reserved words? like SIN, COS, etc...?
 
-			
+
 
 
 		# encountered a invalid state
-		return prevState;			
+		return prevState;
 
 
+class Parser:						# Create the parser class
+	def __init__(self):
+	    pass

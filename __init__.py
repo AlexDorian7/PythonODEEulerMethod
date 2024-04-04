@@ -5,7 +5,9 @@ import matplotlib as mpl
 
 import Euler
 
-ode = Euler.ODE()
+import Token
+
+ode = Euler.ODE(Token.Parser())
 
 method = Euler.EulerMethod(ode)
 
