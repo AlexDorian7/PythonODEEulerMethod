@@ -1,14 +1,21 @@
 from enum import Enum
 
 class TokenType(Enum):				# TokenType Enum
-	ERROR = -1
-	ADD_ME = 0
+	ERROR = 0
+	ADDOP = 1
+	MULOP = 2
+	REAL = 3
+	EXP = 6
+	ALPHA = 7
+	RPAREN = 8
+	LPAREN = 9
+
 
 class __main__:
 	def __init__(self, inp):		# Constructor
 		self.input = inp
 		self.cursor = 0
-		self.DFA = [[-1]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
+		self.DFA = [[TokenType.ERROR]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
 
 	def __iter__(self):				# Init the iterator
 		self.cursor = 0
@@ -24,7 +31,7 @@ class __main__:
 
 			#PM
 		# START(0) -> + (1)
-		self.DFA [0][ord( '+' )] = 1 # ord() returns ASSCI value of a char
+		self.DFA [0][ord( '+' )] = TokenType.ADDOP # ord() returns ASSCI value of a char
 		# START(0) -> - (1)
 		self.DFA [0][ord( '-' )] = 1
 
@@ -72,7 +79,7 @@ class __main__:
 		
 		# Keep track of the state
 		currState = 0
-		prevState = -1
+		prevState = TokenType.ERROR
 
 		value = "" # store value read from input file
 
@@ -91,11 +98,11 @@ class __main__:
 		# should we put back char here??
 	
 		# THE algorithm
-		while currState != -1: # not ERROR
+		while currState != TokenType.ERROR: # not ERROR
 			ch = self.__next__;
 			prevState = currState
 			currState = self.DFA[currState][ord(ch)]
-			if currState != -1:
+			if currState != TokenType.ERROR:
 				value += ch
 
 		
