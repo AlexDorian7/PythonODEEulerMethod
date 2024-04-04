@@ -9,27 +9,15 @@ class TokenType(Enum):							# TokenType Enum
 	ALPHA = 7
 	RPAREN = 8
 	LPAREN = 9
+	EOF = 10
 
 
 class Token:
 	def __init__(self, inp):					# Constructor
-		self.input = inp
-		self.cursor = 0
+		self.input = inp					# The string
+		self.cursor = 0						# Position on the string
 		self.DFA = [[TokenType.ERROR]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
 
-	def __iter__(self):						# Init the iterator
-		self.cursor = 0
-		return self
-
-	def __next__(self):						# get the next character
-		character = self.input[self.cursor]
-		self.cursor = self.cursor + 1
-		return character
-
-	def putBack(self):						# "put" back character
-		self.cursor = self.cursor - 1
-
-	def getToken(self):						# get the next token (Should return a token type)
 		# map out the graph
 
 			#PM
@@ -78,6 +66,19 @@ class Token:
 
 		# done mapping graph
 
+	def __iter__(self):						# Init the iterator
+		self.cursor = 0
+		return self
+
+	def __next__(self):						# get the next character
+		character = self.input[self.cursor]
+		self.cursor = self.cursor + 1
+		return character
+
+	def putBack(self):						# "put" back character
+		self.cursor = self.cursor - 1
+
+	def getToken(self):						# get the next token (Should return (TokenType type, auto value) )
 		# Start of the algorithm
 
 		# Keep track of the state
@@ -94,30 +95,34 @@ class Token:
 			ch = next(self)
 
 		# make sure we are not at the end of the file
-		if ch == ' ':
-			return 10; # EOF
+		if len(self.input) < self.cursor:
+			return (TokenType.EOF, "")			# EOF [ just because we read past the end of the string does not mean that we are an EOF token. There could have still been data before us ]
 
-		# should we put back char here??
+		# put char
+		self.putBack()
 
 		# THE algorithm
-		while currState != TokenType.ERROR: # not ERROR
+		while currState != TokenType.ERROR:			# not ERROR
 			ch = next(self)
 			prevState = currState
 			currState = self.DFA[currState][ord(ch)]
+
 			if currState != TokenType.ERROR:
 				value += ch
-
 
 
 		# check if ID is not a reserved word
 		# if prevState == 3:
 				# do we have any reserved words? like SIN, COS, etc...?
 
-
-
+		# we read an extra character ... put it back for the next get()
+		self.putBack()
+		# insure we are not at the end of the line
+		if len(self.input) < self.cursor:
+			return (TokenType.EOF, "") # EOF
 
 		# encountered a invalid state
-		return prevState;
+		return (prevState, value);
 
 
 class Parser:						# Create the parser class
