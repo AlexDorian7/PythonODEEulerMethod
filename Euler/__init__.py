@@ -1,5 +1,5 @@
 class ODE:
-	def __init__(self):
+	def __init__(self, parser):
 		print("Welcome to the ODE Input Wizard!\nYou will need to provide three numbers from the following form;\ny'(x) = Ay(x) + Bx + C")
 		print("A = ", end='')
 		self.A = float(input())
