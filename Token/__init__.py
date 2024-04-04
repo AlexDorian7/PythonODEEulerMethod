@@ -58,11 +58,11 @@ class Token:
 
 			#INT
 		for i in range(10):					# [0,9]
-			self.DFA [0][ord(i)] = 3 			# START(0) -> DIGIT(3)
-			self.DFA [3][ord(i)] = 3 			# DIGIT(3) -> DIGIT(3)
+			self.DFA [0][ord('0')+i] = 3 			# START(0) -> DIGIT(3)
+			self.DFA [3][ord('0')+i] = 3 			# DIGIT(3) -> DIGIT(3)
 			self.DFA [3][ord( '.' )] = 4 			# DIGIT(3) -> . (4)
-			self.DFA [4][ord(i)] = 5 			# . (4) -> DIGIT (5)
-			self.DFA [5][ord(i)] = 5			# DIGIT(5) -> DIGIT (5)
+			self.DFA [4][ord('0')+i] = 5 			# . (4) -> DIGIT (5)
+			self.DFA [5][ord('0')+i] = 5			# DIGIT(5) -> DIGIT (5)
 
 		# done mapping graph
 
@@ -71,9 +71,13 @@ class Token:
 		return self
 
 	def __next__(self):						# get the next character
-		character = self.input[self.cursor]
-		self.cursor = self.cursor + 1
-		return character
+		try:
+			character = self.input[self.cursor]
+			self.cursor = self.cursor + 1
+			return character
+		except:
+			self.cursor = self.cursor + 1
+			return chr(4)					# Index out of bounds return ^D EOT End of Transmission [EOF End of File] character
 
 	def putBack(self):						# "put" back character
 		self.cursor = self.cursor - 1
@@ -95,7 +99,7 @@ class Token:
 			ch = next(self)
 
 		# make sure we are not at the end of the file
-		if len(self.input) < self.cursor:
+		if ch == chr(4):
 			return (TokenType.EOF, "")			# EOF [ just because we read past the end of the string does not mean that we are an EOF token. There could have still been data before us ]
 
 		# put char
@@ -118,8 +122,8 @@ class Token:
 		# we read an extra character ... put it back for the next get()
 		self.putBack()
 		# insure we are not at the end of the line
-		if len(self.input) < self.cursor:
-			return (TokenType.EOF, "") # EOF
+		#if ch == chr(4):
+		#	return (TokenType.EOF, "") # EOF
 
 		# encountered a invalid state
 		return (prevState, value);
