@@ -5,7 +5,7 @@ class TokenType(Enum):							# TokenType Enum
 	ADDOP	= 1
 	MULOP	= 2
 	REAL	= 3
-	EXP		= 6
+	EXP_CHAR = 6
 	ALPHA	= 7
 	RPAREN	= 8
 	LPAREN	= 9
@@ -125,11 +125,6 @@ class Token:
 
 			if currState != TokenType.ERROR:
 				value += ch
-
-
-		# check if ID is not a reserved word
-		# if prevState == 3:
-				# do we have any reserved words? like SIN, COS, etc...?
 
 		# we read an extra character ... put it back for the next get()
 		self.putBack()

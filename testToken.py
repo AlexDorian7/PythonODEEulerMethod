@@ -16,13 +16,6 @@ for i in range (4):
 #Create File object
 File_object = open(r"Token/test.txt", "r")
 
-
-# Create Token object
-tok2 = Token.__main__(File_object)
-tok.printTok()
-
-
-
 #   // (try to) get the first token
 #   tok.get(ifile);
 
