@@ -17,6 +17,8 @@ class __main__:
 		self.input = inp 			# The string 
 		self.cursor = 0				# Position on the string
 		self.DFA = [[TokenType.ERROR]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
+		self.tokType = TokenType.ERROR 				# Token type
+		self.value = ""				# Token value
 
 	def __iter__(self):				# Init the iterator
 		self.cursor = 0
@@ -29,6 +31,9 @@ class __main__:
 	
 	def putBack(self):				# "put" back character
 		self.cursor = self.cursor - 1
+
+	def print(self):				# print Token object info
+		print("{ Type: ", self.tokType, " Value:", self.value, "}")
 
 	def getToken(self):				# get the next token (Should return a token type)
 		# map out the graph
@@ -85,7 +90,7 @@ class __main__:
 		currState = -1
 		prevState = TokenType.ERROR
 
-		value = "" # store value read from input file
+		# value = "" # store value read from input file
 
 		ch = next(self) # value read from input file
 		
@@ -96,6 +101,7 @@ class __main__:
 
 		# make sure we are not at the end of the file
 		if len(self.input) < self.cursor:
+			self.tokType = TokenType.EOF
 			return TokenType.EOF # EOF
 	
 		# put back char
@@ -108,7 +114,7 @@ class __main__:
 			currState = self.DFA[currState][ord(ch)]
 
 			if currState != TokenType.ERROR:
-				value += ch			
+				self.value += ch			
 
 
 		# we read an extra character ... put it back for the next get()
@@ -117,4 +123,5 @@ class __main__:
 			return TokenType.EOF # EOF
 
 		# encountered a invalid state
+		self.tokType = prevState
 		return prevState; # answer will be in prevState since we hopped out of while loop
