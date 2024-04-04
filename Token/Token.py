@@ -9,12 +9,13 @@ class TokenType(Enum):				# TokenType Enum
 	ALPHA = 7
 	RPAREN = 8
 	LPAREN = 9
+	EOF = 10
 
 
 class __main__:
 	def __init__(self, inp):		# Constructor
-		self.input = inp
-		self.cursor = 0
+		self.input = inp 			# The string 
+		self.cursor = 0				# Position on the string
 		self.DFA = [[TokenType.ERROR]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
 
 	def __iter__(self):				# Init the iterator
@@ -94,30 +95,28 @@ class __main__:
 			ch = next(self)
 
 		# make sure we are not at the end of the file
-		if ch == ' ':
-			return 10; # EOF
+		if len(self.input) < self.cursor:
+			return TokenType.EOF # EOF
+	
 
 	
-		# should we put back char here??
+		# put char
+		self.putBack()
 	
 		# THE algorithm
 		while currState != TokenType.ERROR: # not ERROR
 			ch = next(self)
 			prevState = currState
 			currState = self.DFA[currState][ord(ch)]
+
 			if currState != TokenType.ERROR:
-				value += ch
+				value += ch			
 
-		
 
-		# check if ID is not a reserved word
-		# if prevState == 3:
-				# do we have any reserved words? like SIN, COS, etc...?
-
-			
-
+		# we read an extra character ... put it back for the next get()
+		# insure we are not at the end of the line
+		if len(self.input) < self.cursor:
+			return TokenType.EOF # EOF
 
 		# encountered a invalid state
-		return prevState;			
-
-
+		return prevState;
