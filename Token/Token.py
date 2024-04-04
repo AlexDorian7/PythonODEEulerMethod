@@ -25,6 +25,9 @@ class __main__:
 		character = self.input[self.cursor]
 		self.cursor = self.cursor + 1
 		return character
+	
+	def putBack(self):				# "put" back character
+		self.cursor = self.cursor - 1
 
 	def getToken(self):				# get the next token (Should return a token type)
 		# map out the graph
@@ -84,11 +87,11 @@ class __main__:
 		value = "" # store value read from input file
 
 		ch = '' # value read from input file
-		ch = self.__next__
+		ch = next(self)
 
 		# handle white spaces
 		while ch.isspace():
-			ch = self.__next__
+			ch = next(self)
 
 		# make sure we are not at the end of the file
 		if ch == ' ':
@@ -99,7 +102,7 @@ class __main__:
 	
 		# THE algorithm
 		while currState != TokenType.ERROR: # not ERROR
-			ch = self.__next__;
+			ch = next(self)
 			prevState = currState
 			currState = self.DFA[currState][ord(ch)]
 			if currState != TokenType.ERROR:
