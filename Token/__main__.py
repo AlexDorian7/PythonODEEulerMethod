@@ -15,9 +15,6 @@ print("HI")
 
 
 
-#  // *VERY* simple main function. Just repeatedly call Token's get method!
-#   Token tok;
-
 #   // (try to) get the first token
 #   tok.get(ifile);
 
