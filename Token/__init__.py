@@ -1,15 +1,27 @@
 from enum import Enum
 
 class TokenType(Enum):							# TokenType Enum
-	ERROR = 0
-	ADDOP = 1
-	MULOP = 2
-	REAL = 3
-	EXP = 6
-	ALPHA = 7
-	RPAREN = 8
-	LPAREN = 9
-	EOF = 10
+	ERROR	= 0
+	ADDOP	= 1
+	MULOP	= 2
+	REAL	= 3
+	EXP	= 6
+	ALPHA	= 7
+	RPAREN	= 8
+	LPAREN	= 9
+	EOF	= 10
+	SIN	= 11
+	COS	= 12
+	TAN	= 13
+	ASIN	= 14
+	ACOS	= 15
+	ATAN	= 16
+	ABS	= 17
+	SIGN	= 18
+	EXP	= 19
+	LN	= 20
+	LOG	= 21
+	LOG2	= 22
 
 
 class Token:
@@ -121,9 +133,7 @@ class Token:
 
 		# we read an extra character ... put it back for the next get()
 		self.putBack()
-		# insure we are not at the end of the line
-		#if ch == chr(4):
-		#	return (TokenType.EOF, "") # EOF
+		# insure we are not at the end of the line [ we could be at the end of the file and still just have read a valid token. No need to return EOF
 
 		# encountered a invalid state
 		return (prevState, value);
