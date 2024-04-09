@@ -132,7 +132,6 @@ class Token:
 
 			currState = self.DFA[intCurrState][ord(ch)]
 
-
 			if currState != TokenType.ERROR:
 				value += ch
 
