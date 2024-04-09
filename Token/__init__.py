@@ -5,7 +5,7 @@ class TokenType(Enum):							# TokenType Enum
 	ADDOP	= 1
 	MULOP	= 2
 	REAL	= 3
-	EXP_CHAR = 6
+	EXP_CHAR = 6 # ^
 	ALPHA	= 7
 	RPAREN	= 8
 	LPAREN	= 9
@@ -18,7 +18,7 @@ class TokenType(Enum):							# TokenType Enum
 	ATAN	= 16
 	ABS		= 17
 	SIGN	= 18
-	EXP		= 19
+	EXP		= 19 # e^() 
 	LN		= 20
 	LOG		= 21
 	LOG2	= 22
@@ -144,5 +144,99 @@ class Token:
 
 
 class Parser:						# Create the parser class
+
 	def __init__(self):
-	    pass
+		self.tok = Token("1 123 1.1 12.1 123.123 + - * / ^ (( )( TESTING UPPERCASE testing lowercase ")
+
+	# * equ = term <b>PM</b> equ | term
+	def equ (self):
+		if self.term(): # -> term
+
+			# need to remember position
+			savePos = self.tok.cursor()
+
+			# grab token 
+			tokType, tokVal = self.tok.getToken() # -> term PM 
+			if tokType == TokenType.ADDOP:
+
+				if self.equ: # -> term PM equ
+					return True;
+				else:
+					return False;
+			else: # -> term
+				# need to unget token
+				self.tok.cursor = savePos
+				return True
+		else:
+			return False
+
+	# * term = factor <b>MD</b> term | factor term | factor
+	def term(self):
+		if self.factor: # -> factor
+			savePos = self.tok.cursor() # remember position	
+			tokType, tokVal = self.tok.getToken() # get token
+			
+			if tokType == TokenType.MULOP: # -> factor MD
+				if self.term: # -> factor MD term
+					return True
+				else:
+					return False
+			else:
+				self.tok.cursor = savePos # put back character
+
+				if self.term(): # -> factor term
+					return True
+				else:  # -> factor
+					return True 
+		else:
+			return False
+		
+
+	# * factor = part <b>EXPR</b> part | part
+	def factor(self):
+		if self.part(): # -> part
+			# need to handle EXPR !!
+			# not EXPR 
+			return True # -> part
+			if self.part(): # -> part EXPR part
+				return True
+			else:
+				return False
+		else:
+			return False
+
+
+	# * part = <b>ALPHA</b> | <b>ALPHA</b> <b>LPAREN</b> equ <b>RPAREN</b> | <b>INT</b> | <b>NUM_REAL</b> | <b>LPAREN</b> equ <b>RPAREN</b>
+	def part(self):
+		# read a token first
+		tokType,tokVal = self.tok.getToken()
+
+		if tokType == TokenType.ALPHA: # -> Alpha
+			savePos = self.tok.cursor
+			tokType, tokVal = self.tok.getToken()
+
+			if tokType == TokenType.LPAREN: # -> Alpha LPAREN
+				if (self.equ()): # -> Alpha LPAREN equ
+					tokType, tokVal = self.tok.getToken()
+					if tokType == TokenType.RPAREN: # -> Alpha LPAREN equ RPAREN
+						return True
+					else:
+						return False
+				else:
+					return False
+			else: # -> Alpha
+				self.tok.cursor = savePos # put back character
+				return True		
+		elif tokType == TokenType.REAL: # -> REAL
+			return True
+		elif tokType == TokenType.LPAREN: # -> LPAREN
+			if self.equ(): # -> LPAREN equ
+				tokType,tokVal = self.tok.getToken()
+				if tokType == TokenType.RPAREN: # -> LPAREN equ RPAREN
+					return True
+				else:
+					return False
+			else:
+				return False
+		else:
+			return False
