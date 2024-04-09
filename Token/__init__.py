@@ -1,7 +1,7 @@
 from enum import Enum
 
 class TokenType(Enum):							# TokenType Enum
-	ERROR	= 0
+	ERROR	= -1
 	ADDOP	= 1
 	MULOP	= 2
 	REAL	= 3
@@ -23,8 +23,8 @@ class TokenType(Enum):							# TokenType Enum
 	LOG		= 21
 	LOG2	= 22
 
-
 class Token:
+
 	def __init__(self, inp):					# Constructor
 		self.input = inp					# The string
 		self.cursor = 0						# Position on the string
@@ -48,7 +48,7 @@ class Token:
 
 			#EXP
 		# START(0) -> ^ (6)
-		self.DFA [0][ord( '^' )] = TokenType.EXP
+		self.DFA [0][ord( '^' )] = TokenType.EXP_CHAR
 
 
 			#LPAREN
@@ -94,11 +94,12 @@ class Token:
 	def putBack(self):						# "put" back character
 		self.cursor = self.cursor - 1
 
+
 	def getToken(self):						# get the next token (Should return (TokenType type, auto value) )
 		# Start of the algorithm
 
 		# Keep track of the state
-		currState = -2
+		currState = 0
 		prevState = TokenType.ERROR
 
 		value = ""						# store value read from input file
@@ -121,7 +122,16 @@ class Token:
 		while currState != TokenType.ERROR:			# not ERROR
 			ch = next(self)
 			prevState = currState
-			currState = self.DFA[currState][ord(ch)]
+			
+
+			intCurrState = 0 # cannot index on enum. 
+			for currEnum in TokenType: 	# Grabbing enum int value
+				if currState == currEnum:
+					intCurrState = currEnum.value
+
+
+			currState = self.DFA[intCurrState][ord(ch)]
+
 
 			if currState != TokenType.ERROR:
 				value += ch
