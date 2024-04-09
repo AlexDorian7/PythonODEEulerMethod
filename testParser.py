@@ -1,6 +1,9 @@
 from Token import Parser
 
-parse = Parser()
+parse = Parser("")
 print(parse.tok.input)
-parse.equ()
 
+if parse.equ():
+    print ("It works!")
+else: 
+    print ("It failed!")

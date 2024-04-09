@@ -145,15 +145,15 @@ class Token:
 
 class Parser:						# Create the parser class
 
-	def __init__(self):
-		self.tok = Token("1 123 1.1 12.1 123.123 + - * / ^ (( )( TESTING UPPERCASE testing lowercase ")
-
+	def __init__(self, input):
+		self.tok = Token(input)
+		
 	# * equ = term <b>PM</b> equ | term
 	def equ (self):
 		if self.term(): # -> term
 
 			# need to remember position
-			savePos = self.tok.cursor()
+			savePos = self.tok.cursor
 
 			# grab token 
 			tokType, tokVal = self.tok.getToken() # -> term PM 
@@ -173,7 +173,7 @@ class Parser:						# Create the parser class
 	# * term = factor <b>MD</b> term | factor term | factor
 	def term(self):
 		if self.factor: # -> factor
-			savePos = self.tok.cursor() # remember position	
+			savePos = self.tok.cursor # remember position	
 			tokType, tokVal = self.tok.getToken() # get token
 			
 			if tokType == TokenType.MULOP: # -> factor MD
@@ -190,7 +190,6 @@ class Parser:						# Create the parser class
 					return True 
 		else:
 			return False
-		
 
 	# * factor = part <b>EXPR</b> part | part
 	def factor(self):
