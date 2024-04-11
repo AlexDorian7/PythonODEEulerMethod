@@ -159,7 +159,7 @@ class Parser:						# Create the parser class
 			tokType, tokVal = self.tok.getToken() # -> term PM 
 			if tokType == TokenType.ADDOP:
 
-				if self.equ: # -> term PM equ
+				if self.equ(): # -> term PM equ
 					return True;
 				else:
 					return False;
@@ -172,12 +172,12 @@ class Parser:						# Create the parser class
 
 	# * term = factor <b>MD</b> term | factor term | factor
 	def term(self):
-		if self.factor: # -> factor
+		if self.factor(): # -> factor
 			savePos = self.tok.cursor # remember position	
 			tokType, tokVal = self.tok.getToken() # get token
 			
 			if tokType == TokenType.MULOP: # -> factor MD
-				if self.term: # -> factor MD term
+				if self.term(): # -> factor MD term
 					return True
 				else:
 					return False
@@ -199,7 +199,7 @@ class Parser:						# Create the parser class
 			tokType, tokVal = self.tok.getToken()
 
 			if tokType == TokenType.EXP_CHAR: # -> part EXPR_CHAR
-				
+
 				if self.part(): # -> part EXPR_CHAR part
 					return True
 				else:
@@ -222,7 +222,7 @@ class Parser:						# Create the parser class
 			tokType, tokVal = self.tok.getToken()
 
 			if tokType == TokenType.LPAREN: # -> Alpha LPAREN
-				if (self.equ()): # -> Alpha LPAREN equ
+				if self.equ(): # -> Alpha LPAREN equ
 					tokType, tokVal = self.tok.getToken()
 					if tokType == TokenType.RPAREN: # -> Alpha LPAREN equ RPAREN
 						return True
