@@ -4,7 +4,7 @@
 ### Parser Rules
 * equ = term <b>PM</b> equ | term
 * term = factor <b>MD</b> term | factor term | factor
-* factor = part <b>EXPR</b> part | part
+* factor = part <b>EXP_CHAR</b> part | part
 * part = <b>ID</b> | <b>INT</b> | <b>NUM_REAL</b> | <b>LPAREN</b> equ <b>RPAREN</b> | <b>ID</b> <b>LPAREN</b> equ <b>RPAREN</b>
 
 ### Supported functions
