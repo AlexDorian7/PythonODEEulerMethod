@@ -1,4 +1,4 @@
-echo "Please make sure you have python 3 installed under the command python3"
+echo "Please make sure you have python 3 installed under the command [32mpython3[0m"
 
 python3 -m venv ./venv
 cd ./venv/bin
