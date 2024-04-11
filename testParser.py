@@ -1,6 +1,6 @@
 from Token import Parser
 
-parse = Parser("")
+parse = Parser("x+1")
 print(parse.tok.input)
 
 if parse.equ():
