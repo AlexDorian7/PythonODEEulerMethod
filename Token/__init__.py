@@ -1,3 +1,4 @@
+import Tree
 from enum import Enum
 
 class TokenType(Enum):							# TokenType Enum
