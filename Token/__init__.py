@@ -191,16 +191,23 @@ class Parser:						# Create the parser class
 		else:
 			return False
 
-	# * factor = part <b>EXPR</b> part | part
+	# * factor = part <b>EXP_CHAR</b> part | part
 	def factor(self):
 		if self.part(): # -> part
-			# need to handle EXPR !!
-			# not EXPR 
-			return True # -> part
-			if self.part(): # -> part EXPR part
-				return True
-			else:
-				return False
+			#get token
+			savePos = self.tok.cursor
+			tokType, tokVal = self.tok.getToken()
+
+			if tokType == TokenType.EXP_CHAR: # -> part EXPR_CHAR
+				
+				if self.part(): # -> part EXPR_CHAR part
+					return True
+				else:
+					return False
+			else: 
+				#unget token
+				self.tok.cursor = savePos
+				return True 
 		else:
 			return False
 
