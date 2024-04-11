@@ -188,6 +188,7 @@ class Parser:						# Create the parser class
 				if self.term(): # -> factor term
 					return True
 				else:  # -> factor
+					self.tok.cursor = savePos
 					return True 
 		else:
 			return False
