@@ -3,7 +3,7 @@ from enum import Enum
 import numpy as np
 
 class NodeType(Enum):
-	CONST		= 0 
+	CONST		= 0
 	VAR		= 1
 	ADD		= 2
 	SUB		= 3
@@ -41,26 +41,26 @@ class Node:
 			return eval("np."+self.func+"("+str(self.right(*args, **kwargs))+")")
 		raise Error			# Not a valid Node Type
 
-print(np.sin(10))
+# print(np.sin(10))
 
 # EXAMPLES ARE BELOW
 
-n = Node(NodeType.CONST)
-n.constant = 5
-print(n(x=10))
+# n = Node(NodeType.CONST)
+# n.constant = 5
+# print(n(x=10))
 
-v = Node(NodeType.VAR)
-v.var = "x"
-print(v(x=10))
+# v = Node(NodeType.VAR)
+# v.var = "x"
+# print(v(x=10))
 
-c = Node(NodeType.CALL)
-c.func = "sin"
-c.right = n
-print(c(y=50)) # Notice y here is never used
+# c = Node(NodeType.CALL)
+# c.func = "sin"
+# c.right = n
+# print(c(y=50)) # Notice y here is never used
 
-a = Node(NodeType.ADD)
-a.left = v
-a.right = c
-print(a(x=200)) # Notice x here is different from above
+# a = Node(NodeType.ADD)
+# a.left = v
+# a.right = c
+# print(a(x=200)) # Notice x here is different from above
 
 
