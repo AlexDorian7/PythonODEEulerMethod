@@ -1,4 +1,6 @@
-import Tree
+# import Tree
+# from Tree import Node, NodeType
+
 from enum import Enum
 
 class TokenType(Enum):							# TokenType Enum
@@ -95,7 +97,6 @@ class Token:
 	def putBack(self):						# "put" back character
 		self.cursor = self.cursor - 1
 
-
 	def getToken(self):						# get the next token (Should return (TokenType type, auto value) )
 		# Start of the algorithm
 
@@ -141,29 +142,29 @@ class Token:
 		# insure we are not at the end of the line [ we could be at the end of the file and still just have read a valid token. No need to return EOF
 
 		# encountered a invalid state
-		return (prevState, value);
+		return (prevState, value)
 
 
 class Parser:						# Create the parser class
-
 	def __init__(self, input):
 		self.tok = Token(input)
 		
 	# * equ = term <b>PM</b> equ | term
 	def equ (self):
-		if self.term(): # -> term
 
+		if self.term(): # -> term
 			# need to remember position
 			savePos = self.tok.cursor
 
 			# grab token 
 			tokType, tokVal = self.tok.getToken() # -> term PM 
 			if tokType == TokenType.ADDOP:
+				root = Tree.Node(Tree.NodeType.ADD) 
 
 				if self.equ(): # -> term PM equ
-					return True;
+					return (True, root)
 				else:
-					return False;
+					return False
 			else: # -> term
 				# need to unget token
 				self.tok.cursor = savePos
@@ -220,28 +221,53 @@ class Parser:						# Create the parser class
 		tokType,tokVal = self.tok.getToken()
 
 		if tokType == TokenType.ALPHA: # -> Alpha
+
+			savePreVal = tokVal # save previous tok value before reading new token
+
 			savePos = self.tok.cursor
 			tokType, tokVal = self.tok.getToken()
 
 			if tokType == TokenType.LPAREN: # -> Alpha LPAREN
+
 				if self.equ(): # -> Alpha LPAREN equ
 					tokType, tokVal = self.tok.getToken()
+
 					if tokType == TokenType.RPAREN: # -> Alpha LPAREN equ RPAREN
-						return True
+						if tokVal == "sin":
+							callNode = Tree.Node(Tree.NodeType.CALL)
+							callNode.func = tokVal
+							callNode.right = self.equ
+							return True, callNode
+						
+						# return True # temp comment
 					else:
 						return False
 				else:
 					return False
 			else: # -> Alpha
+				# if tokVal == "sin":
+				# sin = self.Node(self.NodeType.CALL)
+				# sin.func = "sin" 	# function name
+				# sin.right = 	# function param
+				
 				self.tok.cursor = savePos # put back character
-				return True		
+
+				varNode = Tree.Node(Tree.NodeType.VAR) # a VAR node
+				varNode.var = savePreVal
+
+				return True, varNode	
+				
 		elif tokType == TokenType.REAL: # -> REAL
-			return True
+			numNode = Tree.Node(Tree.NodeType.CONST) # a CONST node
+			numNode.constant = tokVal
+
+			return True, numNode
+		
 		elif tokType == TokenType.LPAREN: # -> LPAREN
 			if self.equ(): # -> LPAREN equ
 				tokType,tokVal = self.tok.getToken()
 				if tokType == TokenType.RPAREN: # -> LPAREN equ RPAREN
-					return True
+					return True, self.equ
 				else:
 					return False
 			else:
