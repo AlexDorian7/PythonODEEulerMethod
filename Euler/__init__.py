@@ -28,6 +28,7 @@ class EulerMethod:
 		self.ODE = ode
 		self.xVec = []
 		self.yVec = []
+		self.text = []
 		self.xVec.append(ode.X0)
 		self.yVec.append(ode.Y0)
 		self.steps = 0
@@ -36,6 +37,7 @@ class EulerMethod:
 	def reset(self):
 		self.xVec = []
 		self.yVec = []
+		self.text = []
 		self.xVec.append(self.ODE.X0)
 		self.yVec.append(self.ODE.Y0)
 		self.it = iter(self.ODE)
@@ -44,11 +46,13 @@ class EulerMethod:
 		print("How many steps of Euler's Method would you like to preform? ", end='')
 		self.steps = int(input())
 		step = 0
+		self.text.append(["x", "y"])
 		while step < self.steps:
 			x,y = next(self.it)
 			self.xVec.append(x)
 			self.yVec.append(y)
+			self.text.append([str(x), str(y)])
 			step = step + 1
 		# print(self.xVec)
 		# print(self.yVec)
-		return (self.xVec, self.yVec)
+		return (self.xVec, self.yVec, self.text)

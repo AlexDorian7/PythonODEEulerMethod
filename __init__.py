@@ -13,11 +13,13 @@ ode = Euler.ODE(Token.Parser(input()))
 
 method = Euler.EulerMethod(ode)
 
-x, y = method.start()
+x, y, text = method.start()
 
 # x = np.linspace(0, 2 * np.pi, 200)
 # y = np.sin(x)
 
 fig, ax = plt.subplots()
 ax.plot(x, y, "b")
+ax.plot(x, y, "r+")
+mpl.table.table(ax, text)
 plt.show()
