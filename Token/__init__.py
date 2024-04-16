@@ -3,14 +3,15 @@ from enum import Enum
 import numpy as np
 
 class TokenType(Enum):	# TokenType Enum
-	ERROR	= -1
-	ADDOP	= 1
-	MULOP	= 2
-	REAL	= 3
-	EXP_CHAR = 6 # ^
-	ALPHA	= 7
-	RPAREN	= 8
-	LPAREN	= 9
+	ERROR		= -1
+	ADDOP		= 1
+	MINOP		= 2
+	MULOP		= 3
+	REAL		= 4
+	EXP_CHAR	= 6 # ^
+	ALPHA		= 7
+	RPAREN		= 8
+	LPAREN		= 9
 	EOF		= 10
 
 class Token:
@@ -18,53 +19,53 @@ class Token:
 	def __init__(self, inp):				# Constructor
 		self.input = inp					# The string
 		self.cursor = 0						# Position on the string
-		self.DFA = [[TokenType.ERROR]*256 for r in range(10)]	# 256 = amount of chars (Current 10 final states)
+		self.DFA = [[TokenType.ERROR]*256 for r in range(11)]	# 256 = amount of chars (Current 11 states)
 
 		# map out the graph
 
 			#PM
-		# START(0) -> + (1)
-		self.DFA [0][ord( '+' )] = TokenType.ADDOP		# ord() returns ASSCI value of a char`
-		# START(0) -> - (1)
-		self.DFA [0][ord( '-' )] = TokenType.ADDOP
+		# START(0) -> + (5)
+		self.DFA [0][ord( '+' )] = 5				# ord() returns ASSCI value of a char`
+		# START(0) -> - (6)
+		self.DFA [0][ord( '-' )] = 6
 
 
 			#MD
-		# START(0) -> * (2)
-		self.DFA [0][ord( '*' )] = TokenType.MULOP
-		# START(0) -> / (2)
-		self.DFA [0][ord( '/' )] = TokenType.MULOP
+		# START(0) -> * (7)
+		self.DFA [0][ord( '*' )] = 7
+		# START(0) -> / (7)
+		self.DFA [0][ord( '/' )] = 7
 
 
 			#EXP
-		# START(0) -> ^ (6)
-		self.DFA [0][ord( '^' )] = TokenType.EXP_CHAR
+		# START(0) -> ^ (8)
+		self.DFA [0][ord( '^' )] = 8
 
 
 			#LPAREN
 		# START(0) -> ( (9)
-		self.DFA [0][ord( '(' )] = TokenType.LPAREN
+		self.DFA [0][ord( '(' )] = 9
 			#RPAREN
-		# START(0) -> ) (9)
-		self.DFA [0][ord( ')' )] = TokenType.RPAREN
+		# START(0) -> ) (10)
+		self.DFA [0][ord( ')' )] = 10
 
 
 			#ID (upper and lowercase)
 		for i in range( ord('A'), ord('Z')+1):			# [97,122]
-			self.DFA [0][i] = TokenType.ALPHA			# START(0) -> ID (7) uppercase
-			self.DFA [0][i+32] = TokenType.ALPHA		# lowercase
+			self.DFA [0][i] = 4				# START(0) -> ID (4) uppercase
+			self.DFA [0][i+32] = 4				# lowercase
 
-			self.DFA [7][i] = TokenType.ALPHA			# ID(7) -> ID (7) uppercase
-			self.DFA [7][i+32] = TokenType.ALPHA		# lowercase
+			self.DFA [4][i] = 4				# ID(4) -> ID (4) uppercase
+			self.DFA [4][i+32] = 4				# lowercase
 
 
 			#INT
 		for i in range(10):	# [0,9]
-			self.DFA [0][ord('0')+i] = TokenType.REAL 	# START(0) -> DIGIT(3)
-			self.DFA [3][ord('0')+i] = TokenType.REAL 				# DIGIT(3) -> DIGIT(3)
-			self.DFA [3][ord( '.' )] = TokenType.REAL 				# DIGIT(3) -> . (4)
-			self.DFA [4][ord('0')+i] = TokenType.REAL 				# . (4) -> DIGIT (5)
-			self.DFA [5][ord('0')+i] = TokenType.REAL				# DIGIT(5) -> DIGIT (5)
+			self.DFA [0][ord('0')+i] = 1					 	# START(0) -> DIGIT(1)
+			self.DFA [1][ord('0')+i] = 1		 				# DIGIT(1) -> DIGIT(1)
+			self.DFA [1][ord( '.' )] = 2		 				# DIGIT(1) -> . (2)
+			self.DFA [2][ord('0')+i] = 3		 				# . (2) -> DIGIT (3)
+			self.DFA [3][ord('0')+i] = 3						# DIGIT(3) -> DIGIT (3)
 
 		# done mapping graph
 
@@ -126,10 +127,36 @@ class Token:
 		# we read an extra character ... put it back for the next get()
 		self.putBack()
 
+
+		if prevState == 2:
+			print("WARNING: Invalid Lexical state reached (Ex. \"3.\")")
+			exit(2)
+
 		# insure we are not at the end of the line [ we could be at the end of the file and still just have read a valid token. No need to return EOF
 
-		# encountered a invalid state
-		return (prevState, value)
+		# Return based on internal state
+		if prevState == 1 or prevState == 3:
+			return (TokenType.REAL, value)
+		if prevState == 4:
+			return (TokenType.ALPHA, value)
+		if prevState == 5:
+			return (TokenType.ADDOP, value)
+		if prevState == 6:
+			return (TokenType.MINOP, value)
+		if prevState == 7:
+			return (TokenType.MULOP, value)
+		if prevState == 8:
+			return (TokenType.EXP_CHAR, value)
+		if prevState == 9:
+			return (TokenType.LPAREN, value)
+		if prevState == 10:
+			return (TokenType.RPAREN, value)
+
+		# Very bad if we got here!
+		print("WARNING: Failed to match a valid internal state type!")
+		exit(3)
+
+		# return (prevState, value)
 
 
 class Parser: # check if equation entered matches the grammar and returns the corresponding parse tree

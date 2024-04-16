@@ -7,7 +7,9 @@ import Euler
 
 import Token
 
-ode = Euler.ODE(Token.Parser())
+print("Please enter your equation: ", end="")
+
+ode = Euler.ODE(Token.Parser(input()))
 
 method = Euler.EulerMethod(ode)
 

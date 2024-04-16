@@ -1,21 +1,15 @@
 class ODE:
 	def __init__(self, parser):
-		print("Welcome to the ODE Input Wizard!\nYou will need to provide three numbers from the following form;\ny'(x) = Ay(x) + Bx + C")
-		print("A = ", end='')
-		self.A = float(input())
-		print("B = ", end='')
-		self.B = float(input())
-		print("C = ", end='')
-		self.C = float(input())
-		print("You now need to provide the starting point!\ny(X0) = Y0")
-		print("X0 = ", end='')
+		self.success, self.root = parser.equ()
+		if not self.success:
+			print("WARNING: The provided equation could not be parsed!")
+			exit(1)
+		print("Please enter a value for x0: ", end="")
 		self.X0 = float(input())
-		print("Y0 = ", end='')
+		print("Please enter a value for y0: ", end="")
 		self.Y0 = float(input())
-		print("Now you need to provide the step size!")
-		print("H = ", end='')
+		print("Please enter a value for h:  ", end="")
 		self.H = float(input())
-
 		self.currX = self.X0
 		self.currY = self.Y0
 
@@ -25,7 +19,7 @@ class ODE:
 		return self
 
 	def __next__(self):			# Iterate using Euler's Method
-		self.currY = self.currY + self.H * (self.A * self.currY + self.B * self.currX + self.C)	# y = y0+h*f(x,y(x))
+		self.currY = self.currY + self.H * self.root(x=self.currX, y=self.currY)		# y = y0+h*f(x,y(x))
 		self.currX = self.currX + self.H							# x = x0+h
 		return (self.currX, self.currY)
 
