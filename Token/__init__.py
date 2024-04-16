@@ -178,7 +178,7 @@ class Parser: # check if equation entered matches the grammar and returns the co
 			# grab token 
 			tokType, tokVal = self.tok.getToken() 
 
-			if tokType == TokenType.ADDOP: # -> term PM 
+			if tokType == TokenType.ADDOP or tokType == TokenType.MINOP: # -> term PM 
 
 				#select correct operation
 				if tokVal == '+':
@@ -245,31 +245,49 @@ class Parser: # check if equation entered matches the grammar and returns the co
 	def factor(self):
 		node = None # construct new blank node
 
-		boolVal, nodeReturned = self.part()
-		if boolVal: # -> part
+		boolVal, nodeReturned = self.negator()
+		if boolVal: # -> negatr
 
 			#get token
 			savePos = self.tok.cursor
 			tokType, tokVal = self.tok.getToken()
 
-			if tokType == TokenType.EXP_CHAR: # -> part EXPR_CHAR
+			if tokType == TokenType.EXP_CHAR: # -> negator EXPR_CHAR
 
 				node = Tree.Node(Tree.NodeType.EXP_C)
-				node.left = nodeReturned # from beginning part()
+				node.left = nodeReturned # from beginning negator()
 
-				boolVal, nodeReturned = self.part()
-				if boolVal: # -> part EXPR_CHAR part
-					node.right = nodeReturned # from ending part()
+				boolVal, nodeReturned = self.factor()
+				if boolVal: # -> negator EXPR_CHAR factor
+					node.right = nodeReturned # from ending factor()
 					return (True, node)
 				else:
 					return (False, node)
 			else: 
 				#unget token
 				self.tok.cursor = savePos
-				return (True, nodeReturned) # -> part
+				return (True, nodeReturned) # -> negator
 		else:
 			return (False, node)
 
+	# negator = <b>M</b> part | part
+	def negator(self):
+		node = None
+		savePos = self.tok.cursor
+		tokType, tokValue = self.tok.getTok()
+		if tokType == TokenType.MINOP: # M
+			node = Tree.Node(Tree.NodeType.MUL)
+			node.left = Tree.Node(Tree.NodeType.CONST)
+			node.left.constant = -1
+		else: # part
+			self.tok.cursor = savePos
+		boolVal, nodeReturned = self.part()
+		if boolVal:
+			if node == None:
+				node = nodeReturned
+			else:
+				node.right = nodeReturned
+		return (boolVal, node)
 
 	# part = <b>ALPHA</b> | <b>ALPHA</b> <b>LPAREN</b> equ <b>RPAREN</b> | <b>INT</b> | <b>NUM_REAL</b> | <b>LPAREN</b> equ <b>RPAREN</b>
 	def part(self):
