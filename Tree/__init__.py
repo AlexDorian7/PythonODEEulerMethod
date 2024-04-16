@@ -40,25 +40,4 @@ class Node:
 		if self.type == NodeType.CALL:	# Only Right Child. Func Name stored in parent (aka this node)
 			return eval("np."+self.func+"("+str(self.right(*args, **kwargs))+")")
 		raise Error			# Not a valid Node Type
-
-#print(np.sin(10))
-
-# EXAMPLES ARE BELOW
-
-# n = Node(NodeType.CONST)
-# n.constant = 5
-# print(n(x=10))
-
-# v = Node(NodeType.VAR)
-# v.var = "x"
-# print(v(x=10))
-
-# c = Node(NodeType.CALL)
-# c.func = "sin"
-# c.right = n
-# print(c(y=50)) # Notice y here is never used
-
-# a = Node(NodeType.ADD)
-# a.left = v
-# a.right = c
-# print(a(x=200)) # Notice x here is different from above	
+		

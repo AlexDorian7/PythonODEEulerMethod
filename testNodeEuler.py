@@ -1,6 +1,8 @@
 import numpy as np
 
 import Tree
+# from Token import Parser
+import Token
 
 from Tree import Node, NodeType
 
@@ -25,34 +27,42 @@ from Tree import Node, NodeType
 # print(a(x=200)) # Notice x here is different from aboves
 
 
-#[EXAMPLE 2]:
+# [EXAMPLE 2]:
 
 # y' = sin(x^2)*x+y
 
-root = Tree.Node(Tree.NodeType.ADD)
 
-root.right = Tree.Node(Tree.NodeType.VAR)
-root.right.var = "y"
+# root = Tree.Node(Tree.NodeType.ADD)
 
-mult = Tree.Node(Tree.NodeType.MUL)
-root.left = mult
+# root.right = Tree.Node(Tree.NodeType.VAR)
+# root.right.var = "y"
 
-mult.right = Tree.Node(Tree.NodeType.VAR)
-mult.right.var = "x"
+# mult = Tree.Node(Tree.NodeType.MUL)
+# root.left = mult
 
-call = Tree.Node(Tree.NodeType.CALL)
-call.func = "sin"
-mult.left = call
+# mult.right = Tree.Node(Tree.NodeType.VAR)
+# mult.right.var = "x"
+
+# call = Tree.Node(Tree.NodeType.CALL)
+# call.func = "sin"
+# mult.left = call
 
 
-exp = Tree.Node(Tree.NodeType.EXP_C)
-call.right = exp
+# exp = Tree.Node(Tree.NodeType.EXP_C)
+# call.right = exp
 
-exp.left = Tree.Node(Tree.NodeType.VAR)
-exp.left.var = "x"
+# exp.left = Tree.Node(Tree.NodeType.VAR)
+# exp.left.var = "x"
 
-exp.right = Tree.Node(Tree.NodeType.CONST)
-exp.right.constant = 2
+# exp.right = Tree.Node(Tree.NodeType.CONST)
+# exp.right.constant = 2
+
+equation = "sin(x^2)*x+y"
+
+parseObj = Token.Parser(equation)
+
+boolVal, root = parseObj.equ()
+
 
 print("x, y")
 
@@ -60,7 +70,6 @@ h = 0.01 # np.pi/4
 
 x = 0 # Starting x
 y = 1 # starting y
-
 
 while x <= np.pi*2: # Euler's Method
 	print(str(x) + ", " + str(y))
