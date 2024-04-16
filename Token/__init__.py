@@ -1,5 +1,6 @@
 import Tree
 from enum import Enum
+import numpy as np
 
 class TokenType(Enum):	# TokenType Enum
 	ERROR	= -1
@@ -11,18 +12,6 @@ class TokenType(Enum):	# TokenType Enum
 	RPAREN	= 8
 	LPAREN	= 9
 	EOF		= 10
-	SIN		= 11
-	COS		= 12
-	TAN		= 13
-	ASIN	= 14
-	ACOS	= 15
-	ATAN	= 16
-	ABS		= 17
-	SIGN	= 18
-	EXP		= 19 # e^() 
-	LN		= 20
-	LOG		= 21
-	LOG2	= 22
 
 class Token:
 
@@ -147,6 +136,7 @@ class Parser: # check if equation entered matches the grammar and returns the co
 
 	def __init__(self, equation): # constructor
 		self.tok = Token(equation) # the equation entered by the user
+		self.vars = {} # Any constants that we find will have their value stored here
 		
 	# equ = term <b>PM</b> equ | term
 	def equ (self):
@@ -288,13 +278,31 @@ class Parser: # check if equation entered matches the grammar and returns the co
 
 				node = Tree.Node(Tree.NodeType.VAR)
 				node.var = savePreVal # ALPHA # store variable name
-				
+
 				self.tok.cursor = savePos # put back character
+
+				flag = False
+				if savePreVal == "pi":
+					node.type = Tree.NodeType.CONST
+					node.constant = np.pi
+					flag = True
+				if savePreVal == "e":
+					node.type = Tree.NodeType.CONST
+					node.constant = np.e
+					flag = True
+				if savePreVal != "x" and savePreVal != "y" and not flag:
+					if self.vars.get(savePreVal, None) == None:
+						print("WARNING: Unknown variable [" + savePreVal + "] found! Known variables include [x, y, pi, e].")
+						print("    The Program will now prompt for a constant value to assign to this variable")
+						print("    " + savePreVal + ": ", end="")
+						self.vars[savePreVal] = float(input())
+					node.type = Tree.NodeType.CONST
+					node.constant = self.vars[savePreVal]
 				return (True, node)
-				
+
 		elif tokType == TokenType.REAL: # -> REAL
 			node = Tree.Node(Tree.NodeType.CONST) # a CONST node
-			node.constant = int(tokVal) # tokVal is a string... initialize constant value
+			node.constant = float(tokVal) # tokVal is a string... initialize constant value
 			return (True, node)
 		
 		elif tokType == TokenType.LPAREN: # -> LPAREN
