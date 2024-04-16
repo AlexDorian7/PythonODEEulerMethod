@@ -19,5 +19,5 @@ x, y = method.start()
 # y = np.sin(x)
 
 fig, ax = plt.subplots()
-ax.plot(x, y)
+ax.plot(x, y, "b")
 plt.show()

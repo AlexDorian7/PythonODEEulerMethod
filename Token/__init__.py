@@ -19,7 +19,7 @@ class Token:
 	def __init__(self, inp):				# Constructor
 		self.input = inp					# The string
 		self.cursor = 0						# Position on the string
-		self.DFA = [[TokenType.ERROR]*256 for r in range(11)]	# 256 = amount of chars (Current 11 states)
+		self.DFA = [[-1]*256 for r in range(11)]	# 256 = amount of chars (Current 11 states)
 
 		# map out the graph
 
@@ -90,7 +90,7 @@ class Token:
 
 		# Keep track of the state
 		currState = 0
-		prevState = TokenType.ERROR
+		prevState = -1
 
 		value = ""						# store value read from input file
 
@@ -109,20 +109,16 @@ class Token:
 		self.putBack()
 
 		# THE algorithm
-		while currState != TokenType.ERROR:
+		while currState != -1:
 			ch = next(self)
 			prevState = currState
 
-			intCurrState = 0 # cannot index on enum in Python... 
-			for currEnum in TokenType: 	# ...grabbing enum int value
-				if currState == currEnum:
-					intCurrState = currEnum.value
 
-			currState = self.DFA[intCurrState][ord(ch)] # see if valid state in our DFA look up table
+			currState = self.DFA[currState][ord(ch)] # see if valid state in our DFA look up table
 
 			# store the token value
-			if currState != TokenType.ERROR:
-				value += ch 
+			if currState != -1:
+				value += ch
 
 		# we read an extra character ... put it back for the next get()
 		self.putBack()
@@ -205,10 +201,10 @@ class Parser: # check if equation entered matches the grammar and returns the co
 	def term(self):
 		node = None # construct new blank node
 
-		boolVal, nodeReturned = self.factor() 
+		boolVal, nodeReturned = self.negator()
 		if boolVal: # -> factor
 
-			savePos = self.tok.cursor # remember position	
+			savePos = self.tok.cursor # remember position
 			tokType, tokVal = self.tok.getToken() # get token
 
 			if tokType == TokenType.MULOP: # -> factor MD
@@ -245,21 +241,21 @@ class Parser: # check if equation entered matches the grammar and returns the co
 	def factor(self):
 		node = None # construct new blank node
 
-		boolVal, nodeReturned = self.negator()
-		if boolVal: # -> negatr
+		boolVal, nodeReturned = self.part()
+		if boolVal: # -> part
 
 			#get token
 			savePos = self.tok.cursor
 			tokType, tokVal = self.tok.getToken()
 
-			if tokType == TokenType.EXP_CHAR: # -> negator EXPR_CHAR
+			if tokType == TokenType.EXP_CHAR: # -> part EXPR_CHAR
 
 				node = Tree.Node(Tree.NodeType.EXP_C)
-				node.left = nodeReturned # from beginning negator()
+				node.left = nodeReturned # from beginning part()
 
-				boolVal, nodeReturned = self.factor()
+				boolVal, nodeReturned = self.negator()
 				if boolVal: # -> negator EXPR_CHAR factor
-					node.right = nodeReturned # from ending factor()
+					node.right = nodeReturned # from ending negator()
 					return (True, node)
 				else:
 					return (False, node)
@@ -270,18 +266,18 @@ class Parser: # check if equation entered matches the grammar and returns the co
 		else:
 			return (False, node)
 
-	# negator = <b>M</b> part | part
+	# negator = <b>M</b> factor | factor
 	def negator(self):
 		node = None
 		savePos = self.tok.cursor
-		tokType, tokValue = self.tok.getTok()
+		tokType, tokValue = self.tok.getToken()
 		if tokType == TokenType.MINOP: # M
 			node = Tree.Node(Tree.NodeType.MUL)
 			node.left = Tree.Node(Tree.NodeType.CONST)
 			node.left.constant = -1
-		else: # part
+		else: # factor
 			self.tok.cursor = savePos
-		boolVal, nodeReturned = self.part()
+		boolVal, nodeReturned = self.factor()
 		if boolVal:
 			if node == None:
 				node = nodeReturned
