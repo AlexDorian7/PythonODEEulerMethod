@@ -4,11 +4,11 @@ import numpy as np
 
 class NodeType(Enum):
 	CONST	= 0
-	VAR		= 1
-	ADD		= 2
-	SUB		= 3
-	MUL		= 4
-	DIV		= 5
+	VAR	= 1
+	ADD	= 2
+	SUB	= 3
+	MUL	= 4
+	DIV	= 5
 	EXP_C	= 6 # e^(x)
 	CALL	= 7
 
@@ -18,7 +18,7 @@ class Node:
 		self.right = None
 		self.left = None
 		self.type = type
-		self.constant = None	# The number constant to return (for constant value nodes)
+		self.constant = None		# The number constant to return (for constant value nodes)
 		self.var = None			# The var name to access (For var value nodes)
 		self.func = None		# The numpy function to call (for call nodes)
 
@@ -40,4 +40,4 @@ class Node:
 		if self.type == NodeType.CALL:	# Only Right Child. Func Name stored in parent (aka this node)
 			return eval("np."+self.func+"("+str(self.right(*args, **kwargs))+")")
 		raise Error			# Not a valid Node Type
-		
+

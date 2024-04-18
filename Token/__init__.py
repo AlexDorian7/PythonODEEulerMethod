@@ -2,7 +2,7 @@ import Tree
 from enum import Enum
 import numpy as np
 
-class TokenType(Enum):	# TokenType Enum
+class TokenType(Enum):						# TokenType Enum
 	ERROR		= -1
 	ADDOP		= 1
 	MINOP		= 2
@@ -17,15 +17,15 @@ class TokenType(Enum):	# TokenType Enum
 class Token:
 
 	def __init__(self, inp):				# Constructor
-		self.input = inp					# The string
-		self.cursor = 0						# Position on the string
+		self.input = inp				# The string
+		self.cursor = 0					# Position on the string
 		self.DFA = [[-1]*256 for r in range(11)]	# 256 = amount of chars (Current 11 states)
 
 		# map out the graph
 
 			#PM
 		# START(0) -> + (5)
-		self.DFA [0][ord( '+' )] = 5				# ord() returns ASSCI value of a char`
+		self.DFA [0][ord( '+' )] = 5			# ord() returns ASSCI value of a char`
 		# START(0) -> - (6)
 		self.DFA [0][ord( '-' )] = 6
 
@@ -61,13 +61,12 @@ class Token:
 
 			#INT
 		for i in range(10):	# [0,9]
-			self.DFA [0][ord('0')+i] = 1					 	# START(0) -> DIGIT(1)
-			self.DFA [1][ord('0')+i] = 1		 				# DIGIT(1) -> DIGIT(1)
-			self.DFA [1][ord( '.' )] = 2		 				# DIGIT(1) -> . (2)
-			self.DFA [2][ord('0')+i] = 3		 				# . (2) -> DIGIT (3)
-			self.DFA [3][ord('0')+i] = 3						# DIGIT(3) -> DIGIT (3)
-
-		# done mapping graph
+			self.DFA [0][ord('0')+i] = 1			# START(0) -> DIGIT(1)
+			self.DFA [1][ord('0')+i] = 1		 	# DIGIT(1) -> DIGIT(1)
+			self.DFA [1][ord( '.' )] = 2		 	# DIGIT(1) -> . (2)
+			self.DFA [2][ord('0')+i] = 3		 	# . (2) -> DIGIT (3)
+			self.DFA [3][ord('0')+i] = 3			# DIGIT(3) -> DIGIT (3)
+									# done mapping graph
 
 	def __iter__(self):						# Init the iterator
 		self.cursor = 0
@@ -81,6 +80,7 @@ class Token:
 		except:
 			self.cursor = self.cursor + 1
 			return chr(4)					# Index out of bounds return ^D EOT End of Transmission [EOF End of File] character
+
 
 	def putBack(self):						# "Puts" back character into input
 		self.cursor = self.cursor - 1
@@ -114,7 +114,7 @@ class Token:
 			prevState = currState
 
 
-			currState = self.DFA[currState][ord(ch)] # see if valid state in our DFA look up table
+			currState = self.DFA[currState][ord(ch)]	# see if valid state in our DFA look up table
 
 			# store the token value
 			if currState != -1:
@@ -155,42 +155,42 @@ class Token:
 		# return (prevState, value)
 
 
-class Parser: # check if equation entered matches the grammar and returns the corresponding parse tree
+class Parser:								# check if equation entered matches the grammar and returns the corresponding parse tree
 
-	def __init__(self, equation): # constructor
-		self.tok = Token(equation) # the equation entered by the user
-		self.vars = {} # Any constants that we find will have their value stored here
-		
+	def __init__(self, equation):					# constructor
+		self.tok = Token(equation)				# the equation entered by the user
+		self.vars = {}						# Any constants that we find will have their value stored here
+
 	# equ = term <b>PM</b> equ | term
 	def equ (self):
 
-		root = None # the root node
+		root = None						# the root node
 
 		boolVal, nodeReturned = self.term()
-		if boolVal: # -> term
+		if boolVal:						# -> term
 
 			# need to remember position
 			savePos = self.tok.cursor
-			# grab token 
-			tokType, tokVal = self.tok.getToken() 
+			# grab token
+			tokType, tokVal = self.tok.getToken()
 
-			if tokType == TokenType.ADDOP or tokType == TokenType.MINOP: # -> term PM 
+			if tokType == TokenType.ADDOP or tokType == TokenType.MINOP: # -> term PM
 
 				#select correct operation
 				if tokVal == '+':
 					root = Tree.Node(Tree.NodeType.ADD)
 				elif tokVal == '-':
 					root = Tree.Node(Tree.NodeType.SUB)
-					
-				root.left = nodeReturned # from term()	
+
+				root.left = nodeReturned		# from term()
 
 				boolVal, nodeReturned = self.equ()
-				if boolVal: # -> term PM equ
-					root.right = nodeReturned # from equ()
+				if boolVal:				# -> term PM equ
+					root.right = nodeReturned	# from equ()
 					return (True, root)
 				else:
 					return (False, root)
-			else: # -> term
+			else:						# -> term
 				# need to unget token
 				self.tok.cursor = savePos
 				return (True, nodeReturned)
@@ -199,15 +199,15 @@ class Parser: # check if equation entered matches the grammar and returns the co
 
 	# term = factor <b>MD</b> term | factor term | factor
 	def term(self):
-		node = None # construct new blank node
+		node = None						# construct new blank node
 
 		boolVal, nodeReturned = self.negator()
-		if boolVal: # -> factor
+		if boolVal:						# -> factor
 
-			savePos = self.tok.cursor # remember position
-			tokType, tokVal = self.tok.getToken() # get token
+			savePos = self.tok.cursor			# remember position
+			tokType, tokVal = self.tok.getToken()		# get token
 
-			if tokType == TokenType.MULOP: # -> factor MD
+			if tokType == TokenType.MULOP:			# -> factor MD
 
 				# select correct operation
 				if tokVal == '*':
@@ -215,54 +215,54 @@ class Parser: # check if equation entered matches the grammar and returns the co
 				elif tokVal == '/':
 					node = Tree.Node(Tree.NodeType.DIV)
 
-				node.left = nodeReturned # from factor()
+				node.left = nodeReturned		# from factor()
 
 				boolVal, nodeReturned = self.term()
-				if boolVal: # -> factor MD term
-					node.right = nodeReturned # from term()
+				if boolVal:				# -> factor MD term
+					node.right = nodeReturned	# from term()
 					return (True, node)
 				else:
 					return (False, node)
 			else:
-				self.tok.cursor = savePos # put back character
+				self.tok.cursor = savePos		# put back character
 
-				saveNodeReturned = nodeReturned # save node from factor() before calling term()
+				saveNodeReturned = nodeReturned		# save node from factor() before calling term()
 
 				boolVal, nodeReturned = self.term()
-				if boolVal: # -> factor term
-					return (True, nodeReturned) # from term()
-				else:  # -> factor
-					self.tok.cursor = savePos # from factor()
+				if boolVal:				# -> factor term
+					return (True, nodeReturned)	# from term()
+				else:					# -> factor
+					self.tok.cursor = savePos	# from factor()
 					return (True, saveNodeReturned)
 		else:
 			return (False, node)
 
 	# factor = part <b>EXP_CHAR</b> part | part
 	def factor(self):
-		node = None # construct new blank node
+		node = None						# construct new blank node
 
 		boolVal, nodeReturned = self.part()
-		if boolVal: # -> part
+		if boolVal:						# -> part
 
 			#get token
 			savePos = self.tok.cursor
 			tokType, tokVal = self.tok.getToken()
 
-			if tokType == TokenType.EXP_CHAR: # -> part EXPR_CHAR
+			if tokType == TokenType.EXP_CHAR:		# -> part EXPR_CHAR
 
 				node = Tree.Node(Tree.NodeType.EXP_C)
-				node.left = nodeReturned # from beginning part()
+				node.left = nodeReturned		# from beginning part()
 
 				boolVal, nodeReturned = self.negator()
-				if boolVal: # -> negator EXPR_CHAR factor
-					node.right = nodeReturned # from ending negator()
+				if boolVal:				# -> negator EXPR_CHAR factor
+					node.right = nodeReturned	# from ending negator()
 					return (True, node)
 				else:
 					return (False, node)
-			else: 
+			else:
 				#unget token
 				self.tok.cursor = savePos
-				return (True, nodeReturned) # -> negator
+				return (True, nodeReturned)		# -> negator
 		else:
 			return (False, node)
 
@@ -271,11 +271,11 @@ class Parser: # check if equation entered matches the grammar and returns the co
 		node = None
 		savePos = self.tok.cursor
 		tokType, tokValue = self.tok.getToken()
-		if tokType == TokenType.MINOP: # M
+		if tokType == TokenType.MINOP:				# M
 			node = Tree.Node(Tree.NodeType.MUL)
 			node.left = Tree.Node(Tree.NodeType.CONST)
 			node.left.constant = -1
-		else: # factor
+		else:							# factor
 			self.tok.cursor = savePos
 		boolVal, nodeReturned = self.factor()
 		if boolVal:
@@ -287,40 +287,40 @@ class Parser: # check if equation entered matches the grammar and returns the co
 
 	# part = <b>ALPHA</b> | <b>ALPHA</b> <b>LPAREN</b> equ <b>RPAREN</b> | <b>INT</b> | <b>NUM_REAL</b> | <b>LPAREN</b> equ <b>RPAREN</b>
 	def part(self):
-		node = None # construct new blank node
+		node = None						# construct new blank node
 
 		# read a token first
 		tokType,tokVal = self.tok.getToken()
 
-		if tokType == TokenType.ALPHA: # -> ALPHA
+		if tokType == TokenType.ALPHA:				# -> ALPHA
 
-			savePreVal = tokVal # save previous token value before reading new token
+			savePreVal = tokVal				# save previous token value before reading new token
 
 			savePos = self.tok.cursor
 			tokType, tokVal = self.tok.getToken()
 
-			if tokType == TokenType.LPAREN: # -> ALPHA LPAREN
+			if tokType == TokenType.LPAREN:			# -> ALPHA LPAREN
 
 				boolVal, nodeReturned = self.equ()
-				if boolVal: # -> ALPHA LPAREN equ
+				if boolVal:				# -> ALPHA LPAREN equ
 
 					tokType, tokVal = self.tok.getToken()
 
-					if tokType == TokenType.RPAREN: # -> ALPHA LPAREN equ RPAREN
+					if tokType == TokenType.RPAREN:	# -> ALPHA LPAREN equ RPAREN
 						node = Tree.Node(Tree.NodeType.CALL) # it is a function
-						node.func = savePreVal # ALPHA
+						node.func = savePreVal	# ALPHA
 						node.right = nodeReturned # equ
 						return (True, node)
 					else:
 						return (False, node)
 				else:
 					return (False, node)
-			else: # -> ALPHA
+			else:						# -> ALPHA
 
 				node = Tree.Node(Tree.NodeType.VAR)
-				node.var = savePreVal # ALPHA # store variable name
+				node.var = savePreVal			# ALPHA # store variable name
 
-				self.tok.cursor = savePos # put back character
+				self.tok.cursor = savePos		# put back character
 
 				flag = False
 				if savePreVal == "pi":
@@ -341,17 +341,17 @@ class Parser: # check if equation entered matches the grammar and returns the co
 					node.constant = self.vars[savePreVal]
 				return (True, node)
 
-		elif tokType == TokenType.REAL: # -> REAL
-			node = Tree.Node(Tree.NodeType.CONST) # a CONST node
-			node.constant = float(tokVal) # tokVal is a string... initialize constant value
+		elif tokType == TokenType.REAL:				# -> REAL
+			node = Tree.Node(Tree.NodeType.CONST)		# a CONST node
+			node.constant = float(tokVal)			# tokVal is a string... initialize constant value
 			return (True, node)
-		
-		elif tokType == TokenType.LPAREN: # -> LPAREN
+
+		elif tokType == TokenType.LPAREN:			# -> LPAREN
 
 			boolVal, nodeReturned = self.equ()
-			if boolVal: # -> LPAREN equ
+			if boolVal:					# -> LPAREN equ
 				tokType,tokVal = self.tok.getToken()
-				if tokType == TokenType.RPAREN: # -> LPAREN equ RPAREN
+				if tokType == TokenType.RPAREN:		# -> LPAREN equ RPAREN
 					return (True, nodeReturned)
 				else:
 					return (False, node)

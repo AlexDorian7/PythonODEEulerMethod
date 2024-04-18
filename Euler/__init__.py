@@ -13,12 +13,12 @@ class ODE:
 		self.currX = self.X0
 		self.currY = self.Y0
 
-	def __iter__(self):			# Iterate using Euler's Method
+	def __iter__(self):										# Iterate using Euler's Method
 		self.currX = self.X0
 		self.currY = self.Y0
 		return self
 
-	def __next__(self):			# Iterate using Euler's Method
+	def __next__(self):										# Iterate using Euler's Method
 		self.currY = self.currY + self.H * self.root(x=self.currX, y=self.currY)		# y = y0+h*f(x,y(x))
 		self.currX = self.currX + self.H							# x = x0+h
 		return (self.currX, self.currY)
