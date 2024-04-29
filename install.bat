@@ -6,6 +6,7 @@ python3 -m venv .\venv
 venv\Scripts\activate.bat
 pip3 install matplotlib==3.8.3
 pip3 install PyQt5==5.15.10
+pip3 install pyinstaller==6.6.0
 deactivate
 
 echo "Installed"
